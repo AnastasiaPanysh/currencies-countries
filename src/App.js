@@ -1,49 +1,40 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
+import { useState, useEffect } from 'react'
+import style from './App.module.css'
 import axios from 'axios';
+import CountryItem from './CountryItem'
 
-
-export default function CountrySelect() {
-  let result = ''
+function App() {
+  const [countries, setCountries] = useState([])
+  const [activeCountry, setActiveCountry] = useState('')
 
   async function request() {
-    const data = await axios.get('https://www.nbrb.by/API/ExRates/Currencies')
-    console.log(data);
-    result = data.Cur_Name;
-    return result
+    const response = await axios.get('https://www.nbrb.by/API/ExRates/Currencies')
+    setCountries(response.data)
+    console.log(response.data);
   }
 
+  function setActive(event) {
+    setActiveCountry(event.target.textContent)
+  }
+
+  useEffect(() => {
+    request()
+  })
+
   return (
-    <Autocomplete
-      id="country-select-demo"
-      sx={{ width: 300 }}
-      options={request}
-      autoHighlight
-      getOptionLabel={(option) => option.label}
-      renderOption={(props, option) => (
-        <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-          <img
-            loading="lazy"
-            width="20"
-            src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
-            srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
-            alt=""
-          />
-          {option.label} ({option.code}) +{option.phone}
-        </Box>
-      )}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          label="Choose a country"
-          inputProps={{
-            ...params.inputProps,
-            autoComplete: 'new-password', // disable autocomplete and autofill
-          }}
-        />
-      )}
-    />
+    <>
+      <div className={style['listbox']}>
+        <div className={style['country-name']}>{activeCountry}</div>
+        <div className={style['select-occupation']}>
+          <p>Select Occupation</p>
+          <div></div>
+        </div>
+        <div onClick={setActive} className={style['wrapper']}>
+          {countries.map((el) => <CountryItem key={el.Cur_ID} title={el.Cur_Name} />)}
+        </div>
+      </div>
+    </>
   );
 }
+
+export default App;
