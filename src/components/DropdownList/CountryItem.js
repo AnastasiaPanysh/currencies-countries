@@ -1,10 +1,12 @@
 
 
-function CountryItem({ title }) {
+function CountryItem({ title}) {
     return (
-        
+
         <>
             <p>{title}</p>
+       
+
         </>
     )
 }
